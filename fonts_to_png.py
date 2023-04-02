@@ -1,40 +1,58 @@
 import os
 from fontTools.ttLib import TTFont
-from fontTools import config
 from fontTools.pens.freetypePen import FreeTypePen
-from fontTools.misc.transform import Offset
-import PIL
 
-pen = FreeTypePen(None)
-font_name, way = "Disket-Mono-Regular", r"C:\Users\cycli\AppData\Local\Microsoft\Windows\Fonts"
-font = TTFont(f"{way}\\{font_name}.ttf")
+png_f = "png_fonts\\"
+not_work_list = []
+cyrillic = [
+    chr(n) for n in range(ord("а"), ord("я") + 1)
+] + [
+    chr(n) for n in range(ord("А"), ord("Я") + 1)
+]
 
-try:
-    os.chdir(font_name)
-except:
-    os.mkdir(font_name)
-    os.chdir(font_name)
-for c in [chr(n) for n in range(0, 10000)]:
+def del_(name):
+    dir_ = png_f + name
+    for file in os.listdir(dir_):
+        os.remove(dir_ + "\\" + file)
+    os.rmdir(png_f + name)
+
+for name in os.listdir("fonts"):
+    print(name)
+    font = TTFont(f"fonts\\{name}")
+
+    name = name[:-4]
+
     try:
-        glyph = font.getGlyphSet()[c]
-        pen = FreeTypePen(None)
-        glyph.draw(pen)
-        a = 0
-        a = pen.image(width=0, height=0, contain=True)
-        a = a.resize((256, 256))
-        a.save(f"{c}.png")
+        os.mkdir(png_f + name)
     except:
-        pass
+        print("exists")
+    
+    for c in [chr(n) for n in range(0, 10000)]:
+        try:
+            glyph = font.getGlyphSet()[c]
+            pen = FreeTypePen(None)
+            glyph.draw(pen)
+            a = 0
+            a = pen.image(width=0, height=0, contain=True)
+            a = a.resize((256, 256))
+            a.save(f"{png_f}{name}\\{c}.png")
+        except:
+            pass
 
-for code in ["ch247", "uni0410", "Iocyrillic"]:
-    try:
-        glyph = font.getGlyphSet()[code]
-        pen = FreeTypePen(None)
-        glyph.draw(pen)
-        a = pen.image(width=0, height=0, contain=True)
-        a = a.resize((256, 256))
-        a.save(f"code.png")
-    except KeyError:
-        print(f"Некорректный код: {code}")
+    for code in [("uni0", 0x40F)]:
+        work = False
+        for i in range(66):
+            code_ = code[0] + str(hex(int(code[1]) + i))[2:].upper()
+            try:
+                glyph = font.getGlyphSet()[code_]
+                pen = FreeTypePen(None)
+                glyph.draw(pen)
+                a = pen.image(width=0, height=0, contain=True)
+                a = a.resize((256, 256))
+                a.save(f"{png_f}{name}\\{i * 'а'}.png")
+                work = True
+            except KeyError:
+                pass
+    if work != True: # type: ignore
+        del_(name)
 
-font.saveXML("AA.xml")
