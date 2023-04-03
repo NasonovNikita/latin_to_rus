@@ -58,7 +58,7 @@ for name in os.listdir("fonts"):
             pass
         except ft_errors.FT_Exception:
             pass
-        
+
     if work == False: # type: ignore
         del_(name)
     else:
