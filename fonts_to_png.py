@@ -1,14 +1,15 @@
 import os
 from fontTools.ttLib import TTFont
 from fontTools.pens.freetypePen import FreeTypePen
+from freetype import ft_errors
 
 png_f = "png_fonts\\"
 not_work_list = []
-cyrillic = [
-    chr(n) for n in range(ord("а"), ord("я") + 1)
-] + [
-    chr(n) for n in range(ord("А"), ord("Я") + 1)
-]
+#cyrillic = [
+#    chr(n) for n in range(ord("а"), ord("я") + 1)
+#] + [
+#    chr(n) for n in range(ord("А"), ord("Я") + 1)
+#]
 
 def del_(name):
     dir_ = png_f + name
@@ -25,9 +26,10 @@ for name in os.listdir("fonts"):
     try:
         os.mkdir(png_f + name)
     except:
-        print("exists")
+        pass
     
-    for c in [chr(n) for n in range(0, 10000)]:
+    for n in range(0, 1000):
+        c = chr(n)
         try:
             glyph = font.getGlyphSet()[c]
             pen = FreeTypePen(None)
@@ -35,24 +37,29 @@ for name in os.listdir("fonts"):
             a = 0
             a = pen.image(width=0, height=0, contain=True)
             a = a.resize((256, 256))
-            a.save(f"{png_f}{name}\\{c}.png")
+            a.save(f"{png_f}{name}\\{n}{c}.png")
         except:
             pass
 
-    for code in [("uni0", 0x40F)]:
-        work = False
-        for i in range(66):
-            code_ = code[0] + str(hex(int(code[1]) + i))[2:].upper()
-            try:
-                glyph = font.getGlyphSet()[code_]
-                pen = FreeTypePen(None)
-                glyph.draw(pen)
-                a = pen.image(width=0, height=0, contain=True)
-                a = a.resize((256, 256))
-                a.save(f"{png_f}{name}\\{i * 'а'}.png")
-                work = True
-            except KeyError:
-                pass
-    if work != True: # type: ignore
-        del_(name)
 
+    work = False
+    for i in range(81):
+        code_ = "uni0" + str(hex(int(0x401) + i))[2:].upper()
+        try:
+            glyph = font.getGlyphSet()[code_]
+            pen = FreeTypePen(None)
+            glyph.draw(pen)
+            a = pen.image(width=0, height=0, contain=True)
+            a = a.resize((256, 256))
+            a.save(f"{png_f}{name}\\cyr_{i}.png")
+            work = True
+        except KeyError:
+            pass
+        except TypeError:
+            pass
+        except ft_errors.FT_Exception:
+            pass
+    if work == False: # type: ignore
+        del_(name)
+    else:
+        print("success")
