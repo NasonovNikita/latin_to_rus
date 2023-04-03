@@ -26,22 +26,21 @@ for name in os.listdir("fonts"):
     try:
         os.mkdir(png_f + name)
     except:
-        pass
-    
+        print("exists")
+        #continue    #turn on, if you are sure, that existing fonts are correct
+
     for n in range(0, 1000):
         c = chr(n)
         try:
             glyph = font.getGlyphSet()[c]
             pen = FreeTypePen(None)
             glyph.draw(pen)
-            a = 0
             a = pen.image(width=0, height=0, contain=True)
             a = a.resize((256, 256))
             a.save(f"{png_f}{name}\\{n}{c}.png")
         except:
             pass
-
-
+    
     work = False
     for i in range(81):
         code_ = "uni0" + str(hex(int(0x401) + i))[2:].upper()
@@ -59,7 +58,9 @@ for name in os.listdir("fonts"):
             pass
         except ft_errors.FT_Exception:
             pass
+        
     if work == False: # type: ignore
         del_(name)
     else:
         print("success")
+
