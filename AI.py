@@ -7,7 +7,7 @@ from keras.utils.image_dataset import image_dataset_from_directory
 
 in_folder = 118
 size = 256
-data_dir = "C:/programming/Python/Programs/fonts_render/AI_train"
+data_dir = "./AI_train"
 
 train_dataset = image_dataset_from_directory(
     data_dir + "/train",  # от наличия /tarin или /val ошибка не меняется
@@ -19,7 +19,7 @@ train_dataset = image_dataset_from_directory(
 )
 
 val_ds = tf.keras.utils.image_dataset_from_directory(
-    data_dir,
+    data_dir + '/val',
     labels="inferred",
     label_mode='categorical',
     seed=2,
