@@ -4,7 +4,8 @@ from fontTools.pens.freetypePen import FreeTypePen
 from freetype import ft_errors
 
 png_f = "png_fonts\\"
-not_work_list = []
+success = 0
+failure = 0
 #cyrillic = [
 #    chr(n) for n in range(ord("а"), ord("я") + 1)
 #] + [
@@ -29,6 +30,7 @@ for name in os.listdir("fonts"):
         print("exists")
         #continue    #turn on, if you are sure, that existing fonts are correct
 
+    cnt = 0
     for n in range(0, 1000):
         c = chr(n)
         try:
@@ -38,10 +40,10 @@ for name in os.listdir("fonts"):
             a = pen.image(width=0, height=0, contain=True)
             a = a.resize((256, 256))
             a.save(f"{png_f}{name}\\{n}{c}.png")
+            cnt += 1
         except:
             pass
     
-    work = False
     for i in range(81):
         code_ = "uni0" + str(hex(int(0x401) + i))[2:].upper()
         try:
@@ -51,16 +53,16 @@ for name in os.listdir("fonts"):
             a = pen.image(width=0, height=0, contain=True)
             a = a.resize((256, 256))
             a.save(f"{png_f}{name}\\cyr_{i}.png")
-            work = True
-        except KeyError:
-            pass
-        except TypeError:
-            pass
-        except ft_errors.FT_Exception:
+            cnt += 1
+        except:
             pass
 
-    if work == False: # type: ignore
+    if cnt != 118: # type: ignore
         del_(name)
+        print("failure")
+        failure += 1
     else:
         print("success")
+        success += 1
 
+print(f"Success: {success}, fails: {failure}")
